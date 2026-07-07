@@ -154,6 +154,42 @@ class BaseACRDAWithRadio(BaseACRDA):
             return True
         return False
 
+
+
+
+
+
+
+
+class BaseWithRadio(Base):
+    def try_decode(self, packet, now):
+        def frag_ok(f):
+            radio_lost = getattr(f, 'radio_lost', False)
+            return (not radio_lost) and (len(f.collided) == 0) and (f.transmitted == 1)
+
+        h_success = sum(frag_ok(f) if f.type == 'header' else 0 for f in packet.fragments)
+        p_success = sum(frag_ok(f) if f.type == 'payload' else 0 for f in packet.fragments)
+        success = 1 if ((h_success > 0) and (p_success >= self.threshold)) else 0
+
+        if success == 1:
+            self.packets_received[packet.node_id] += 1
+            packet.success = 1
+            return True
+        return False
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ============================================================
 # Simulation generique multi-groupes avec modele radio
 # ============================================================
@@ -180,10 +216,13 @@ def run_sim_groups(groups_spec, total_nodes, distance_km,
 
     avg_toa = np.mean([s.time_on_air for s, _ in settings_list])
     s0 = settings_list[0][0]
-    bs = BaseACRDAWithRadio(obw, s0.window_size, s0.window_step,
-                            avg_toa, s0.threshold, sic_limit, gamma, seed)
-    env.process(bs.sic_window(env))
 
+    if base == 'acrda':
+        bs = BaseACRDAWithRadio(obw, s0.window_size, s0.window_step,
+                            avg_toa, s0.threshold, sic_limit, gamma, seed)
+        env.process(bs.sic_window(env))
+    else:
+        bs = BaseWithRadio(obw, s0.threshold)
     nodes = []
     remaining = total_nodes
     for i, (s, prop) in enumerate(settings_list):
