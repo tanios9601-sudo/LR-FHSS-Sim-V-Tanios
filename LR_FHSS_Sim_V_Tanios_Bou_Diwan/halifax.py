@@ -167,6 +167,26 @@ class BaseACRDAWithRadio(BaseACRDA):
             return False
 
 # ============================================================
+# Base (non-ACRDA) étendue qui tient compte de radio_lost
+# ============================================================
+class BaseWithRadio(Base):
+    def try_decode(self, packet, now):
+        def frag_ok(f):
+            radio_lost = getattr(f, 'radio_lost', False)
+            return (not radio_lost) and (len(f.collided) == 0) and (f.transmitted == 1)
+
+        h_success = sum(frag_ok(f) if f.type == 'header' else 0 for f in packet.fragments)
+        p_success = sum(frag_ok(f) if f.type == 'payload' else 0 for f in packet.fragments)
+        success = 1 if ((h_success > 0) and (p_success >= self.threshold)) else 0
+
+        if success == 1:
+            self.packets_received[packet.node_id] += 1
+            packet.success = 1
+            return True
+        else:
+            return False
+
+# ============================================================
 # Helpers
 # ============================================================
 def make_settings(n_nodes, headers, code, base, simulation_time=3600,
@@ -191,7 +211,7 @@ def build_base(settings_list, obw, base, sic_limit=None, gamma=1.0, seed=0):
                                 avg_toa, s0.threshold, sic_limit, gamma, seed)
     else:
         s0 = settings_list[0]
-        bs = Base(obw, s0.threshold)
+        bs = BaseWithRadio(obw, s0.threshold)
     return bs
 
 def add_nodes_from_settings(env, bs, settings, n_nodes, per):
@@ -284,8 +304,8 @@ if __name__ == "__main__":
     # =========================================================
     # Paramètres globaux
     DR              = 'DR5'
-    N_NODES         = 100000 // 8
-    BASE            = 'acrda'
+    N_NODES         = 25000 // 8
+    BASE            = 'acrda'   # <-- mettre 'core' pour désactiver ACRDA/SIC
     CODE            = '1/3'
     N_SEEDS         = 1
     SIMULATION_TIME = 3600
@@ -387,18 +407,17 @@ if __name__ == "__main__":
             #print(f"\n✅ Résultats exportés → {filename}")
 
     elapsed = time() - start_time
-    
+
     print(f"\nElapsed time: {elapsed:.2f} seconds")
 
     #timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     #filename  = f"resultats_halifax_sic_gamma_{"halifax_h2=h3_150k"}.xlsx"
     #df = pd.DataFrame(rows)
-    
+
     #with pd.ExcelWriter(filename, engine='openpyxl') as writer:
     #    for g in GAMMAS:
     #        df_g = df[df['Gamma'] == g]
     #        sheet_name = f"gamma={g}"
     #        df_g.to_excel(writer, sheet_name=sheet_name, index=False)
-    
+
     #print(f"\n✅ Résultats exportés → {filename}")
-   
