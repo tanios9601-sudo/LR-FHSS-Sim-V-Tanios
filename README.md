@@ -38,6 +38,14 @@ This repository includes several simulation scripts designed to evaluate LR-FHSS
 - `beyrouth_rural.py`: runs simulations using the **Beirut rural propagation model**.
 - `beyrouth_urban.py`: runs simulations using the **Beirut urban propagation model**.
 
+## References
+
+[1] R. El Chall, S. Lahoud, and M. El Helou, "LoRaWAN Network: Radio Propagation Models and Performance Evaluation in Various Environments in Lebanon," *IEEE Internet of Things Journal*, vol. 6, no. 2, pp. 2366–2378, Apr. 2019.  
+Available: https://ieeexplore.ieee.org/document/8672452/
+
+[2] A. Delplace, S. Lahoud, and K. Khawam, "Exploring LR-FHSS Modulation for Enhanced IoT Connectivity: A Measurement Campaign," in *2025 IEEE 102nd Vehicular Technology Conference (VTC2025-Fall)*, Chengdu, China, Oct. 2025, pp. 1–7.  
+Available: https://ieeexplore.ieee.org/document/11309920/
+
 Each script is associated with a specific radio propagation model and can be used to analyze network performance under different deployment environments.
 
 The file:
