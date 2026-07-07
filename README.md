@@ -37,6 +37,9 @@ This repository includes several simulation scripts designed to evaluate LR-FHSS
 - `halifax.py`: runs simulations using the **Halifax radio propagation model**.
 - `beyrouth_rural.py`: runs simulations using the **Beirut rural propagation model**.
 - `beyrouth_urban.py`: runs simulations using the **Beirut urban propagation model**.
+The file:
+
+- `run.py`: runs LR-FHSS simulations without radio channel modeling, assuming an ideal propagation environment.
 
 ## References
 
@@ -47,7 +50,3 @@ Available: https://ieeexplore.ieee.org/document/8672452/
 Available: https://ieeexplore.ieee.org/document/11309920/
 
 Each script is associated with a specific radio propagation model and can be used to analyze network performance under different deployment environments.
-
-The file:
-
-- `run.py`: runs LR-FHSS simulations without radio channel modeling, assuming an ideal propagation environment.
