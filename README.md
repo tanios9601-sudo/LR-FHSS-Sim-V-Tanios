@@ -17,7 +17,7 @@ This repository contains an adapted version of the original **LR-FHSS-Sim** simu
 This work is based on the LR-FHSS-Sim simulator developed by the original authors.
 
 Original repository:
-[Link to LR-FHSS-Sim]
+[LR-FHSS-Sim](https://github.com/Xexell/LR-FHSS-sim/tree/main/lrfhss)
 
 The original simulator provides a framework for simulating LR-FHSS networks and evaluating their performance in large-scale IoT scenarios.
 
@@ -27,7 +27,7 @@ The modifications introduced in this version include:
 
 - [ ] Implementation of limited SIC capabilities.
 - [ ] Modeling of imperfect SIC behavior.
-- [ ] Integration of radio propagation effects (path loss, shadowing, fading, etc.).
+- [ ] Integration of radio propagation effects.
 - [ ] Evaluation of reliability metrics under different network conditions.
 
 ## Simulation Configurations
