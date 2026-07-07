@@ -13,20 +13,20 @@ from openpyxl.utils import get_column_letter
 # ============================================================
 # Paramètres
 # ============================================================
-NODE_COUNTS     = [25000, 50000, 75000, 100000, 125000, 150000]
-SIC_LIMITS      = [None, 2, 3, 4]
-GAMMAS          = [1,  0.9,  0.80,  0.7,  0.6, 0.5]
+NODE_COUNTS     = [50000]
+SIC_LIMITS      = [None]
+GAMMAS          = [1]
 SEEDS           = list(range(1))
 SIMULATION_TIME = 3600
 PAYLOAD_SIZE    = 10
 CODE            = '1/3'
 OBW             = 35
-BASE            = 'acrda'
+BASE            = 'acrda'   # <-- change ici en 'core' si tu veux tester sans ACRDA
 
 DISTRIBUTIONS = [
-    ('h2', [(2, 1)]),
+    #('h2', [(2, 1)]),
     ('h3', [(3, 1)]),
-    ('h2=h3=0.5',       [(2, 0.5), (3, 0.5)]),  # 50% h=2, 50% h=3
+    #('h2=h3=0.5',       [(2, 0.5), (3, 0.5)]),  # 50% h=2, 50% h=3
 ]
 
 # ============================================================
@@ -44,11 +44,16 @@ def run_sim_groups(groups_spec, total_nodes, seed=0, sic_limit=None, gamma=1.0):
                      obw=OBW, base=BASE, sic_limit=sic_limit, gamma=gamma)
         settings_list.append((s, prop))
 
-    avg_toa = np.mean([s.time_on_air for s, _ in settings_list])
     s0 = settings_list[0][0]
-    bs = BaseACRDA(OBW, s0.window_size, s0.window_step, avg_toa, s0.threshold, sic_limit, gamma, seed)
 
-    env.process(bs.sic_window(env))
+    # --- Branchement selon le type de base (correction du bug) ---
+    if s0.base == 'acrda':
+        avg_toa = np.mean([s.time_on_air for s, _ in settings_list])
+        bs = BaseACRDA(OBW, s0.window_size, s0.window_step, avg_toa, s0.threshold, sic_limit, gamma, seed)
+        env.process(bs.sic_window(env))
+    else:
+        bs = Base(OBW, s0.threshold)
+    # ---------------------------------------------------------------
 
     nodes = []
     remaining = total_nodes
@@ -174,7 +179,7 @@ if __name__ == "__main__":
                     sic_str = str(sic) if sic is not None else 'None'
                     print(f"{label:<20} {n:>8} {sic_str:>6} {g:>6.2f} {mean:>15.2f} {std:>8.2f}",
                           flush=True)
-
+'''
     save_to_excel(
         all_results=all_results,
         node_counts=NODE_COUNTS,
@@ -186,3 +191,4 @@ if __name__ == "__main__":
 
     elapsed = time() - start_time
     print(f"\nElapsed time: {elapsed:.2f} seconds")
+'''
